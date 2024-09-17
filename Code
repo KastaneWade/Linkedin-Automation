@@ -1,0 +1,74 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
+import time
+
+# Linkedin login credentials
+username = 'Your Email'
+password = 'Your Password'
+
+# Linkedin URL's
+search_url = 'https://www.linkedin.com/mynetwork/grow/'
+
+# Set up Chrome options
+chrome_options = Options()
+chrome_options.add_argument("--start-maximized")
+chrome_options.add_argument("--disable-notifications")
+
+# Set up ChromeDriver Service
+service = Service('/usr/local/bin/chromedriver')
+
+# Initialize WebDriver
+driver = webdriver.Chrome(service=service, options=chrome_options)
+
+# Function to log in to Linkedin
+
+def linkedin_login():
+    driver.get('https://wwww.linkedin.com/login')
+    time.sleep(3)
+
+    # Input username
+    email_input = driver.find_element(By.ID, 'username')
+    email_input.send_keys(username)
+
+    # Input password
+    password_input = driver.find_element(By.ID, 'password')
+    password_input.send_keys(password)
+    password_input.send_keys(Keys.RETURN)
+    time.sleep(5)
+
+# Function to send connection requests
+def connect_with_people():
+    # Go to search URL (Or list of people)
+    driver.get(search_url)
+    time.sleep(5)
+
+    # Scroll to load more profiles
+    for _ in range(3): # Adjust scroll range based on the number of profiles
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight;")
+        time.sleep(2)
+
+    # Find all 'connect' buttons and click them
+    connect_buttons = driver.find_element(By.XPATH, '//button[contains(text(), "Connect")]')
+
+    for button in connect_buttons:
+        try:
+            button.click()
+            time.sleep(2)
+            # Confirm the connection request (popup)
+            send_button = driver.find_element(By.XPATH, '//button[contains(text(), "Send")]')
+            send_button.click()
+            time.sleep(2)
+        except Exception as e:
+            print(f"Error: {e}")
+            continue
+
+# Main flow
+try:
+    linkedin_login()
+    connect_with_people()
+finally:
+    # Close the browser after the process
+    driver.quit()
